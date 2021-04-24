@@ -4,9 +4,15 @@ import { Button } from '@material-ui/core';
 import { auth, provider } from '../firebase';
 
 function Login() {
-    const signIn = () => {
+    var signIn = async () => {
         console.log('Sign In');
-        auth.signInWithRedirect(provider).catch(alert);
+        await auth
+            .signInWithRedirect(provider)
+            .then((data) => {
+                console.log('Sign in success');
+            })
+            .catch(alert);
+        console.log('Signin done!');
     };
     return (
         <Container>

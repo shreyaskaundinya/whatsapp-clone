@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useStateValue } from '../StateProvider';
@@ -51,7 +51,7 @@ function ChatScreen({ chat, messages }) {
     const recipient = recipientSnapshot?.docs?.[0].data();
 
     // snapshot of messages data
-    const [messagesSnapshot] = useCollection(
+    var [messagesSnapshot] = useCollection(
         db
             .collection('chats')
             .doc(router.query.id)
@@ -67,6 +67,17 @@ function ChatScreen({ chat, messages }) {
             term: true,
         });
     };
+
+    const scrollToBottom = () => {
+        endOfMessagesRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messagesSnapshot]);
 
     // messages components
     const messagesComponents = () => {
@@ -127,15 +138,6 @@ function ChatScreen({ chat, messages }) {
         });
 
         setCurrentMessage('');
-
-        scrollToBottom();
-    };
-
-    const scrollToBottom = () => {
-        endOfMessagesRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-        });
     };
 
     return (
@@ -174,10 +176,7 @@ function ChatScreen({ chat, messages }) {
                     </IconButton>
                 </HeaderIcons>
             </Header>
-            <MessagesContainer>
-                {messagesComponents()}
-                <EndOfMessage ref={endOfMessagesRef} />
-            </MessagesContainer>
+            <MessagesContainer>{messagesComponents()}</MessagesContainer>
             <MessageForm>
                 <InsertEmoticonIcon />
                 <MessageInput
@@ -190,6 +189,7 @@ function ChatScreen({ chat, messages }) {
                     <SendIcon />
                 </SendButton>
             </MessageForm>
+            <EndOfMessage ref={endOfMessagesRef} />
         </Container>
     );
 }
@@ -232,7 +232,9 @@ const UserAvatar = styled(Avatar)`
 
 const MessagesContainer = styled.div`
     /* flex: 1; */
-    padding: 30px 30px;
+    padding: 30px 30px 30px 30px;
+    margin-bottom: 60px;
+
     overflow-y: scroll;
     ::-webkit-scrollbar {
         display: none;
@@ -240,6 +242,10 @@ const MessagesContainer = styled.div`
 
     --ms-overflow-style: none;
     scrollbar-width: none;
+    @media (max-width: 768px) {
+        padding: 70px 30px;
+        margin: unset;
+    }
 `;
 
 const MessageForm = styled.form`

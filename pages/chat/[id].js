@@ -13,7 +13,7 @@ function Chat({ messages, chat }) {
     return (
         <Container>
             <Head>
-                <title>Chat with {recipientEmail}</title>
+                <title>Chat with {recipientEmail.split('@')[0]}</title>
             </Head>
             <Sidebar />
             <ChatContainer>
